@@ -45,9 +45,8 @@ class UserResource extends Resource
                     'driver'=>'Driver'
                 ])
                     ->required(),
-                Forms\Components\TextInput::make('photo')
-                    ->maxLength(255)
-                    ->default(null),
+                Forms\Components\FileUpload::make('photo')
+                ->image(),
                 Forms\Components\TextInput::make('whatsapp')
                     ->maxLength(255)
                     ->default(null),
@@ -62,10 +61,9 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
-               
+
                 Tables\Columns\TextColumn::make('role'),
-                Tables\Columns\TextColumn::make('photo')
-                    ->searchable(),
+                Tables\Columns\ImageColumn::make('photo'),
                 Tables\Columns\TextColumn::make('whatsapp')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')

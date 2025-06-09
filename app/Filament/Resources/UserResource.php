@@ -62,7 +62,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('role'),
+              
                 Tables\Columns\ImageColumn::make('photo'),
                 Tables\Columns\TextColumn::make('whatsapp')
                     ->searchable(),

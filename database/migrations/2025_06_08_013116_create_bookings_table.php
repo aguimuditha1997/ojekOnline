@@ -17,11 +17,11 @@ return new class extends Migration
             $table->foreignId('driver_id')->nullable()->constrained('drivers')->nullOnDelete();
             $table->decimal('latitude_origin', 10, 8);
             $table->decimal('longitude_origin', 10, 8);
-            $table->string('addresss_origin');
-            $table->decimal('laitude_destination', 10, 8);
+            $table->string('address_origin');
+            $table->decimal('latitude_destination', 10, 8);
             $table->decimal('longitude_destination', 10,8 );
             $table->string('address_destination');
-            $table->decimal('destance', 10, 2);
+            $table->decimal('distance', 10, 2);
             $table->decimal('price', 10, 2);
             $table->enum('status',[
                 'finding_driver',

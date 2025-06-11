@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\BookingResource\Pages;
 use App\Filament\Resources\BookingResource\RelationManagers;
 use App\Models\Booking;
+use App\Models\Driver;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -24,21 +25,35 @@ class BookingResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('customer_id')
-                    ->relationship('customer', 'name')
+                    ->relationship('customer', 'name', function($query){
+                        return $query->where('role', 'customer');
+                    })
                     ->required(),
                 Forms\Components\Select::make('driver_id')
-                    ->relationship('driver', 'name')
-                    ->default(null),
+                    ->options(function(){
+                        return Driver::with('user')
+                            ->whereHas('user', function($query){
+                                $query->where('role', 'driver');
+                            })
+                            ->get()
+                            ->mapWithKeys(function($driver){
+                                return [$driver->id => $driver->user->name . ' - ' . $driver->vehicle_number];
+                            })
+                            ->toArray();
+                    })
+                    ->nullable()
+                    ->label('Driver'),
+
                 Forms\Components\TextInput::make('latitude_origin')
                     ->required()
                     ->numeric(),
                 Forms\Components\TextInput::make('longitude_origin')
                     ->required()
                     ->numeric(),
-                Forms\Components\TextInput::make('addresss_origin')
+                Forms\Components\TextInput::make('address_origin')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('laitude_destination')
+                Forms\Components\TextInput::make('latitude_destination')
                     ->required()
                     ->numeric(),
                 Forms\Components\TextInput::make('longitude_destination')
@@ -47,14 +62,23 @@ class BookingResource extends Resource
                 Forms\Components\TextInput::make('address_destination')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('destance')
+                Forms\Components\TextInput::make('distance')
                     ->required()
                     ->numeric(),
                 Forms\Components\TextInput::make('price')
                     ->required()
                     ->numeric()
-                    ->prefix('$'),
-                Forms\Components\TextInput::make('status')
+                    ->prefix('Rp'),
+                Forms\Components\select::make('status')
+                    ->options(  [
+                        'finding_driver'=>'Finding Driver',
+                        'driver_pickup'=>'Driver Pickup',
+                        'driver_deliver'=>'Driver Deliver',
+                        'arrived'=>'Arrived',
+                        'paid'=>'Paid',
+                        'cancelled'=>'Cancelled'
+                        ]
+                    )
                     ->required(),
                 Forms\Components\TextInput::make('time_estimate')
                     ->numeric()
@@ -78,9 +102,9 @@ class BookingResource extends Resource
                 Tables\Columns\TextColumn::make('longitude_origin')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('addresss_origin')
+                Tables\Columns\TextColumn::make('address_origin')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('laitude_destination')
+                Tables\Columns\TextColumn::make('latitude_destination')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('longitude_destination')
@@ -88,7 +112,7 @@ class BookingResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('address_destination')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('destance')
+                Tables\Columns\TextColumn::make('distance')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('price')
